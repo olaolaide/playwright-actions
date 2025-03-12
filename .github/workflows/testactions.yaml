@@ -10,11 +10,19 @@ jobs:
       ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Install dependencies
-        run: npm install
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "Using npm ci"
+            npm ci
+          elif [ -f yarn.lock ]; then
+            echo "Using yarn install"
+            yarn install --frozen-lockfile
+          else
+            echo "No lockfile found, running npm install"
+            npm install
+          fi
 
       - name: Start shopping store application
         run: ./shopping-store-windows-386.exe &
